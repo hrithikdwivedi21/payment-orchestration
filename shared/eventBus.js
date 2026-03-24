@@ -2,11 +2,26 @@ const amqp = require("amqplib");
 
 let channel;
 
-async function connect() {
+async function connectRabbit() {
+  while (true) {
+    try {
 
-  const connection = await amqp.connect("amqp://rabbitmq");
-  channel = await connection.createChannel();
+      const connection = await amqp.connect("amqp://rabbitmq");
 
+      channel = await connection.createChannel();
+
+      console.log("Connected to RabbitMQ");
+
+      break;
+
+    } catch (err) {
+
+      console.log("Waiting for RabbitMQ...");
+
+      await new Promise(res => setTimeout(res, 3000));
+
+    }
+  }
 }
 
 async function publish(queue, message) {
@@ -17,7 +32,6 @@ async function publish(queue, message) {
     queue,
     Buffer.from(JSON.stringify(message))
   );
-
 }
 
 async function subscribe(queue, handler) {
@@ -33,7 +47,6 @@ async function subscribe(queue, handler) {
     channel.ack(msg);
 
   });
-
 }
 
-module.exports = { connect, publish, subscribe };
+module.exports = { connectRabbit, publish, subscribe };

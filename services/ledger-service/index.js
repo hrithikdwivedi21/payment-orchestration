@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require("uuid");
 
 async function start(){
 
- await eventBus.connect();
+  await eventBus.connectRabbit();
 
  eventBus.subscribe("ledger",async data=>{
 
